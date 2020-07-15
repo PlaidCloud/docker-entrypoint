@@ -14,6 +14,7 @@
 \#*#
 app/cockpit/s3cache*
 build
+dist
 *.egg-info/
 skaffold.yaml
 src
