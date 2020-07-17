@@ -117,7 +117,7 @@ kubectl exec $POD_NAME -- bash -c "kill -USR1 1"
 
 ### main.py
 
-Defines an `asyncio` framework for managing the process proxied by `entrypoint`. This includes forwarding relevant signals and restarting your process when it exits. The following table documents the signals that are currently handled:
+Defines an `asyncio` loop for managing the process proxied by `entrypoint`. This includes forwarding relevant signals and restarting your process when it exits. The following table documents the signals that are currently handled:
 
 | Signal | Outcome |
 |---|---|
