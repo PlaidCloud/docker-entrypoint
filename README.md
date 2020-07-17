@@ -2,12 +2,12 @@
 
 `docker-entrypoint` is a basic utility to proxy a container's normal entrypoint. This avoid a few pitfalls in developing and debugging processes running in kubernetes pods, namely:
 
-- Starting/stopping debugging sessions without restarting the pod.
-- Changing environment variables without restarting the pod.
+- Starting/stopping debugging sessions without restarting the container, and subsequently losing state of the filesystem.
+- Changing environment variables without restarting the container, so environment changes can be made without redeploying to kubernetes.
 
 ## How to Install
 
-`docker-entrypoint` can be installed via `pip`:
+`docker-entrypoint` can be installed in your docker image via `pip`:
 
 ```bash
 pip install docker-entrypoint
@@ -38,7 +38,9 @@ root@my-pod:/path/to/my/app# entrypoint python main.py
 
 Since `entrypoint` must be running as PID 1 in the pod's container to have any value, we must modify the configured entrypoint for the container at launch. There are two options to do so.
 
-Option one: specify an alternate entrypoint in the container spec for your pod/deploy/statefulset manifest:
+#### Option one: Kubernetes Container Spec
+
+Specify an alternate entrypoint in the container spec for your pod/deploy/statefulset manifest:
 
 ```yaml
 spec:
@@ -48,7 +50,9 @@ spec:
     args: ["python", "main.py"]
 ```
 
-Option two: use `entrypoint` as your entrypoint in the Dockerfile itself:
+#### Option two: Dockerfile `ENTRYPOINT`
+
+Use `entrypoint` as your entrypoint in the Dockerfile itself:
 
 ```dockerfile
 FROM python:3.7
@@ -113,12 +117,12 @@ kubectl exec $POD_NAME -- bash -c "kill -USR1 1"
 
 ### main.py
 
-The `asyncio` process that launches your process, forwards relevant signals, and restarts your process when it exits. The following table documents the signals that are currently handled:
+Defines an `asyncio` framework for managing the process proxied by `entrypoint`. This includes forwarding relevant signals and restarting your process when it exits. The following table documents the signals that are currently handled:
 
 | Signal | Outcome |
 |---|---|
-| `SIGTERM` | Causes `entrypoint` to stop managing and exit. This restarts the pod as normal. |
-| `SIGINT` | Causes `entrypoint` to stop managing and exit. This restarts the pod as normal. |
+| `SIGTERM` | Causes `entrypoint` to stop managing and exit. This restarts the container as normal. |
+| `SIGINT` | Causes `entrypoint` to stop managing and exit. This restarts the container as normal. |
 | `SIGHUP` | Signal `entrypoint` to forward `SIGTERM` to process, and then spawns another process. |
 | `SIGUSR1` | Signal `entrypoint` to continue with establishing a debugging session. Only necessary when `DEBUGGER_EDITOR=pycharm`. |
 
