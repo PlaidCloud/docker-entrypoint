@@ -18,8 +18,8 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='docker-entrypoint',
-    author='Garrett Bates',
-    author_email='garrett.bates@tartansolutions.com',
+    author='Garrett Bates, Dave Parsons',
+    author_email='garrett.bates@tartansolutions.com, dave.parsons@tartansolutions.com',
     description="Basic utility to proxy a container's normal entrypoint",
     version='0.1.1',
     license='MIT',
