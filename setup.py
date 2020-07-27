@@ -35,6 +35,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         'python-dotenv',
+        'ptvsd',
+        'pydevd-pycharm',
     ],
     entry_points='''
         [console_scripts]
