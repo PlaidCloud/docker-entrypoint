@@ -86,7 +86,7 @@ dbg.start() # Will wait for debugger to attach, depending on configuration.
 | `DEBUGGER_EDITOR` | `vscode`, `pycharm` | `vscode` |
 | `DEBUGGER_WAIT` | `true`, `false` | `true`  |
 
-These values are pulled from a "dotenv" file located at `/.env` (hidden file at root of filesystem). This is hardcoded. Additionally, the ports used for forwarding and reverse forwarding are hardcoded to `9000` and `9001`, respectively. When launching port-forwarding commands, be sure to use these ports for the pod-side binding.
+These values are pulled from a "dotenv" file located at `/tmp/.env`. This is hardcoded. Additionally, the ports used for forwarding and reverse forwarding are hardcoded to `9000` and `9001`, respectively. When launching port-forwarding commands, be sure to use these ports for the pod-side binding.
 
 Get the name of your pod:
 
@@ -103,7 +103,7 @@ kubectl exec $POD_NAME -- bash -c "kill -HUP 1"
 Environment variables are loaded from the in-pod `.env` file prior to each launch of the debugger, so they can be updated on-demand from a local `.env` file. Simply copy your local .env file into the pod and restart your process. Again, this does _not_ restart the container.
 
 ```bash
-kubectl cp .env $POD_NAME:/.env
+kubectl cp .env $POD_NAME:/tmp/.env
 kubectl exec $POD_NAME -- bash -c "kill -HUP 1"
 ```
 
@@ -132,7 +132,7 @@ Defines a `Debugger` class that will start a debugging session based on environm
 
 #### `Debugger.__init__()`
 
-Loads environment variables into `os.environ` from a dotenv file located at `/.env`, and then parses these values for use in a debugging session.
+Loads environment variables into `os.environ` from a dotenv file located at `/tmp/.env`, and then parses these values for use in a debugging session.
 
 #### `Debugger.start()`
 
