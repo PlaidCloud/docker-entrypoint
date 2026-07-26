@@ -5,7 +5,6 @@ __author__ = "Garrett Bates"
 __copyright__ = "© Copyright 2020, Tartan Solutions, Inc"
 __credits__ = ["Garrett Bates"]
 __license__ = "Apache 2.0"
-__version__ = "0.1.7"
 __maintainer__ = "Garrett Bates"
 __email__ = "garrett.bates@tartansolutions.com"
 __status__ = "Development"
@@ -21,7 +20,6 @@ setup(
     author='Garrett Bates, Dave Parsons',
     author_email='garrett.bates@tartansolutions.com, dave.parsons@tartansolutions.com',
     description="Basic utility to proxy a container's normal entrypoint",
-    version='0.1.7',
     license='MIT',
     long_description=long_description,
     long_description_content_type='text/markdown',
