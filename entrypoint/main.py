@@ -5,7 +5,6 @@ __author__ = "Garrett Bates"
 __copyright__ = "© Copyright 2020, Tartan Solutions, Inc"
 __credits__ = ["Garrett Bates"]
 __license__ = "Apache 2.0"
-__version__ = "0.1.3"
 __maintainer__ = "Garrett Bates"
 __email__ = "garrett.bates@tartansolutions.com"
 __status__ = "Development"
@@ -42,17 +41,27 @@ async def send_signal(proc_queue, sig):
 
 async def run_command(proc_queue):
     """Creates a child process from the args passed in from shell. Restarts until cancelled during shutdown."""
+    backoff = 2.5
     try:
         while True:
             proc = await asyncio.create_subprocess_exec(sys.argv[1], *sys.argv[2:], preexec_fn=os.setpgrp)
             proc_queue.put_nowait(proc)
-            await proc.wait()
+            returncode = await proc.wait()
             with suppress(asyncio.QueueEmpty):
                 # Dequeue the process if its still there.
                 proc_queue.get_nowait()
-            logging.info("")
-            logging.info(" Restarting...")
-            logging.info("")
+            if returncode and returncode > 0:
+                # Process returned error (None = process still running), so initiate backoff mechanism.
+                backoff = backoff * 2 if backoff < 300 else 300
+                logging.info("")
+                logging.info(f" Restarting in {backoff} seconds...")
+                logging.info("")
+            else:
+                backoff = 2.5
+                logging.info("")
+                logging.info(" Restarting...")
+                logging.info("")
+            await asyncio.sleep(backoff)
     except asyncio.CancelledError:
         proc.terminate()
         await proc.wait() # Must wait for termination to finish to avoid zombies.

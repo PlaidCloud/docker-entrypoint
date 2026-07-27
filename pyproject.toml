@@ -1,0 +1,8 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+# Version is derived from the git tag by setuptools-scm — no manual bumps.
+# Release: tag `vX.Y.Z` + publish a GitHub release; the release.yml workflow
+# builds that version and publishes to PyPI (trusted publishing).
+[tool.setuptools_scm]

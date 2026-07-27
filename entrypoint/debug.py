@@ -21,7 +21,6 @@ __author__ = "Garrett Bates"
 __copyright__ = "© Copyright 2020, Tartan Solutions, Inc"
 __credits__ = ["Garrett Bates, Dave Parsons"]
 __license__ = "Apache 2.0"
-__version__ = "0.1.3"
 __maintainer__ = "Garrett Bates"
 __email__ = "garrett.bates@tartansolutions.com"
 __status__ = "Development"
@@ -102,17 +101,23 @@ class Debugger(object):
             return
 
         if self.editor == 'vscode':
-            import ptvsd
-            ptvsd.enable_attach(address=(self.address, self.port), redirect_output=True)
+            import debugpy
+            debugpy.listen((self.address, self.port))
             if self.wait:
                 logger.info(" Waiting for debugger to attach...")
-                ptvsd.wait_for_attach()
+                debugpy.wait_for_client()
 
         if self.editor == 'pycharm':
             from contextlib import suppress
             with suppress(ConnectionRefusedError):
                 def start_debugger(signum, frame):
-                    import pydevd_pycharm
+                    try:
+                        import pydevd_pycharm
+                    except ImportError as exc:
+                        raise RuntimeError(
+                            "pydevd-pycharm is required for the PyCharm debugger. "
+                            "Install it with `pip install pydevd-pycharm`."
+                        ) from exc
                     logger.info(f" Connecting to debug server on {self.address}...")
                     pydevd_pycharm.settrace(self.address,
                                             port=int(self.port),
